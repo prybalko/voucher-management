@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -9,8 +10,12 @@ from app.routers import vouchers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Create database tables on startup."""
-    Base.metadata.create_all(bind=engine)
+    """Create database tables on startup.
+
+    Uses asyncio.to_thread to run synchronous database operations
+    in a thread pool, making it properly async.
+    """
+    await asyncio.to_thread(Base.metadata.create_all, bind=engine)
     yield
 
 

@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func
+from sqlalchemy.orm import Query as SQLAlchemyQuery
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -16,7 +17,7 @@ from app.schemas import (
 router = APIRouter(prefix="/vouchers", tags=["vouchers"])
 
 
-def _active_vouchers_query(db: Session):
+def _active_vouchers_query(db: Session) -> SQLAlchemyQuery[Voucher]:
     """Base query for active, non-expired vouchers."""
     now = datetime.now(UTC)
     return db.query(Voucher).filter(Voucher.is_active.is_(True), Voucher.expires_at > now)
@@ -44,7 +45,12 @@ def list_vouchers(
     """List active, non-expired vouchers with pagination."""
     base_query = _active_vouchers_query(db)
     total = base_query.with_entities(func.count(Voucher.id)).scalar()
-    vouchers = base_query.offset(skip).limit(limit).all()
+    vouchers = (
+        base_query.order_by(Voucher.created_at.desc(), Voucher.id.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
     return {
         "items": vouchers,
         "total": total,

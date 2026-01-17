@@ -73,17 +73,13 @@ Once running, visit:
 
 ## Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/vouchers` | Create a new voucher |
-| GET | `/vouchers` | List vouchers (paginated) |
-| GET | `/vouchers/{code}` | Get voucher by code |
-| PATCH | `/vouchers/{code}` | Update a voucher |
-| DELETE | `/vouchers/{code}` | Deactivate a voucher |
-
-## Concurrency
-
-- **Pessimistic locking**: Update and delete operations use `SELECT ... FOR UPDATE` to prevent lost updates
+| Method | Endpoint           | Description               |
+|--------|--------------------|---------------------------|
+| POST   | `/vouchers`        | Create a new voucher      |
+| GET    | `/vouchers`        | List vouchers (paginated) |
+| GET    | `/vouchers/{code}` | Get voucher by code       |
+| PATCH  | `/vouchers/{code}` | Update a voucher          |
+| DELETE | `/vouchers/{code}` | Deactivate a voucher      |
 
 ## Example Usage
 

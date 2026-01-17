@@ -15,7 +15,7 @@ class TestCreateVoucher:
         data = response.json()
         assert data["discount_percent"] == 20
         assert data["is_active"] is True
-        assert len(data["code"]) == 8
+        assert len(data["code"]) == 12
         assert "id" in data
         assert "created_at" in data
         assert "updated_at" in data
@@ -297,6 +297,32 @@ class TestUpdateVoucher:
         data = response.json()
         assert data["discount_percent"] == 50
         assert data["is_active"] == original["is_active"]
+
+    def test_update_voucher_updates_updated_at(self, client: TestClient) -> None:
+        """Test that updating a voucher automatically updates the updated_at timestamp."""
+        expires_at = (datetime.now(UTC) + timedelta(days=30)).isoformat()
+        create_response = client.post(
+            "/vouchers/",
+            json={"discount_percent": 20, "expires_at": expires_at},
+        )
+        original = create_response.json()
+        code = original["code"]
+        original_updated_at = datetime.fromisoformat(original["updated_at"])
+
+        # Update the voucher
+        response = client.patch(
+            f"/vouchers/{code}",
+            json={"discount_percent": 30},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        new_updated_at = datetime.fromisoformat(data["updated_at"])
+
+        # Verify updated_at has changed to a later time
+        assert new_updated_at > original_updated_at
+        # Verify it's recent (within last few seconds)
+        assert (datetime.now(UTC) - new_updated_at).total_seconds() < 5
 
 
 class TestDeactivateVoucher:

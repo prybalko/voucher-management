@@ -30,7 +30,11 @@ def create_test_database() -> None:
     engine.dispose()
 
 
-create_test_database()
+@pytest.fixture(scope="session", autouse=True)
+def setup_test_database() -> None:
+    """Setup test database once per test session."""
+    create_test_database()
+
 
 engine = create_engine(TEST_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

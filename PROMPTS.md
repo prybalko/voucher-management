@@ -70,3 +70,17 @@
 15. `run tests`
 
 16. `for list\get apis return only active and non-expired vouchers. When deleting, do not delete the record, set active to False. Add tests`
+
+17. `add test for onupdate`
+
+18. `add type annotation to def _active_vouchers_query(db: Session)`
+
+19. `Using deprecated declarative_base(). SQLAlchemy 2.0 recommends DeclarativeBase`
+
+20. `add index for expires_at, as it's filtering by it`
+
+21. `move create_test_database to a pytest fixture with session scope`
+
+22. `app uses asynccontextmanager but the database operations are synchronous`
+
+23. `list endpoint doesn't specify ordering, make it deterministic`
